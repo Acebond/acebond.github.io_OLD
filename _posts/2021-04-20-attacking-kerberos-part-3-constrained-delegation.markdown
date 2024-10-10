@@ -60,6 +60,6 @@ _Access to the C$ share on INDIGON_
 ## References
 
 - [https://github.com/GhostPack/Rubeus#constrained-delegation-abuse](https://github.com/GhostPack/Rubeus#constrained-delegation-abuse)
-- [http://www.harmj0y.net/blog/activedirectory/s4u2pwnage/](http://www.harmj0y.net/blog/activedirectory/s4u2pwnage/)
+- [https://blog.harmj0y.net/activedirectory/s4u2pwnage/](https://blog.harmj0y.net/activedirectory/s4u2pwnage/)
 - [https://shenaniganslabs.io/2019/01/28/Wagging-the-Dog.html](https://shenaniganslabs.io/2019/01/28/Wagging-the-Dog.html)
 - [https://twitter.com/HackAndDo](https://twitter.com/HackAndDo)
