@@ -64,7 +64,7 @@ The attacker can control the challenge, which does allow the use of rainbow tabl
 
 Since the attacker can choose the challenge, nothing prevents the attacker from retrieving a challenge from a service within the network and having the victim solve it. This allows the attacker to authenticate to an arbitrary service within the network as the victim.
 
-![](image.png)
+![](/assets/img/2020-05-18/image.png)
 
 Depending on the victim privileges, this can be leveraged to further compromise machines within the network, gain access to file servers, update Active Directory objects on the Domain Controller, etc.
 
@@ -76,7 +76,7 @@ This can be done using Impacket ntlmrelayx, Inveigh-Relay or Responder MultiRela
 
 The absolute best solution would be to configure the security policy **Network Security: Restrict NTLM: Outgoing NTLM traffic to remote servers** to **Deny all**. This will prevent the device from using NTLM authentication, and consequently force the use of Kerberos authentication, which is the preferred authentication protocol within an Active Directory network. Any legacy systems that require NTLM authentication should be added to the security policy **Network security: Restrict NTLM: Add remote server exceptions for NTLM authentication**.
 
-![Example Secure Configuration (NTLM authentication can only be performed to a single legacy system)](image-1.png)
+![Example Secure Configuration (NTLM authentication can only be performed to a single legacy system)](/assets/img/2020-05-18/image-1.png)
 _Example Secure Configuration (NTLM authentication can only be performed to a single legacy system)_
 
 The below recommendations and mitigations are grouped into the 3 phases of the attack, and can be used to improve the security posture of the network. However, even if all the below recommendations and mitigations are applied, some methods such as backdoored or malicious files within a network share will continue to be effective unless the above security policies are configured.

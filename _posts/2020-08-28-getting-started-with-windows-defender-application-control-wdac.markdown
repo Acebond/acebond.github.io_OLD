@@ -24,17 +24,17 @@ The DefaultWindows_Audit.xml is a reference policy supplied by Microsoft that ca
 
 An important distinction should be made between Windows and Microsoft signed code. Windows refers to the base operating system while Microsoft refers to any code signed by Microsoft. The Get-AuthenticodeSignature cmdlet can be used to determine if a binary is part of the base operating system.
 
-![](image-0.png)
+![](/assets/img/2020-08-28/image-0.png)
 
 After enabling the DefaultWindows_Audit.xml policy with the above command and rebooting, the event log can be used to inspect code integrity violations. The events will be stored in the Applications and Service Logs Microsoft Windows CodeIntegrity Operational log. The Event ID 3076 represents a code integrity violation in audit mode. These events will be followed by at least one Event ID 3089 which provides further information regarding the signature of the binary in violation. The 3076 and 3089 events can be correlated through a Correlation ActivityID viewable within the raw XML.
 
 The example Event ID 3076 below shows that services.exe loaded mysql.exe, which did not meet the code integrity policy.
 
-![](image1.png)
+![](/assets/img/2020-08-28/image1.png)
 
 This violation produced two 3089 events, as is evident with the TotalSignatureCount of 2; the first, Signature 0 (displayed below), shows that mysql.exe had a digital signature from Oracle.
 
-![](image2.png)
+![](/assets/img/2020-08-28/image2.png)
 
 The last signature, which will always exist, is a hash created by WDAC using some internal hashing method.
 
@@ -46,7 +46,7 @@ Get-ChildItem -File -Recurse -Include *.exe, *.dll, *.sys | Get-AuthenticodeSign
 
 The results show that all of the Google Chrome executable files are signed with a valid signature.
 
-![](Chrome_Get-AuthenticodeSignature.png)
+![](/assets/img/2020-08-28/Chrome_Get-AuthenticodeSignature.png)
 
 The Chrome policy can be built based on the Publisher using the commands:
 
@@ -62,13 +62,13 @@ While performing the same process on 7-Zip I discovered that none of the executa
 $rules = New-CIPolicyRule -FilePathRule "C:\Program Files\7-Zip\*"  
 New-CIPolicy -FilePath C:\Users\acebond\Documents\7-Zip.xml -Rules $rules
 
-![](7Zip_Get-AuthenticodeSignature.png)
+![](/assets/img/2020-08-28/7Zip_Get-AuthenticodeSignature.png)
 
 The 7-Zip code integrity policy is based on the FilePathRule and allows all code in the 7-Zip Program Files directory. The wildcard placed at the end of the path authorizes all files in that path and subdirectories recursively.
 
 Sublime Text 3 contained a mixture of signed and unsigned files.
 
-![](sublime_text_Get-AuthenticodeSignature.png)
+![](/assets/img/2020-08-28/sublime_text_Get-AuthenticodeSignature.png)
 
 In this instance, the Fallback parameter can be used to specify a secondary rule level for executables that do not meet the primary trust level specified in the Level parameter. I chose to trust the Sublime Text 3 files based on the FilePublisher which is a combination of the FileName attribute of the signed file, plus Publisher. Files that cannot meet the FilePubisher trust level, such as python33.dll, will be trusted based on the Hash rule level.
 
@@ -77,7 +77,7 @@ New-CIPolicy -FilePath Sublime_Text.xml -DriverFiles $SignerInfo -Level FilePubl
 
 These 3 new policies can be merged into the base DefaultWindows_Audit.xml policy to whitelist Chrome, 7-Zip and Sublime Text 3. In the screenshot below I have merged all 4 policies. A quick note that Merge-CIPolicy uses the first policy specified in the PolicyPaths as the base, and does not merge policy rule options.
 
-![](merge.png)
+![](/assets/img/2020-08-28/merge.png)
 
 I have chosen to live dangerously and removed rule option 3 (Enable:Audit Mode) so the policy executes in enforcement mode.
 
@@ -92,7 +92,7 @@ Set-RuleOption -FilePath .\Desktop.xml -Option 3 -DeleteConvertFrom-CIPolicy -Xm
 
 The new policy allows Chrome, 7-Zip and Sublime Text 3 and blocks all other software from running.
 
-![](blocked-1.png)
+![](/assets/img/2020-08-28/blocked-1.png)
 
 ## Bypassing WDAC?
 
@@ -105,13 +105,13 @@ Secondly, Sublime Text 3 comes packaged with Python which is a powerful interpre
 Lastly, the policy does not block a number of default applications built into the OS that allow the execution of arbitrary code. A list and policy to block these executables is maintained in the [Microsoft recommended block rules](https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules).   
 To demonstrate, I’ve used the well known MSBuild executable to execute a Cobalt Strike trojan and bypassed the WDAC policy. The MSBuild.exe executable will load a number of libraries to compile and execute the code provided, but all of the executables and libraries involved are part of the base operating system and code integrity policy. This is not a WDAC vulnerability, but rather a misconfiguration in that the policy allows an executable that has the ability to execute arbitrary C# code. These are the types of executables that create holes in application whitelisting solutions.
 
-![](msbuild_bypass.png)
+![](/assets/img/2020-08-28/msbuild_bypass.png)
 
 The MSBuild bypass, and all Windows executables that bypass WDAC can be blocked by including the Microsoft recommended block rules in our WDAC policy. A number of these executables do have legitimate use cases, and I personally think the focus should be on monitoring and initial code execution methods, as running MSBuild.exe implies that an attacker already has the ability to execute commands on the system.
 
 I saved the block rules as BlockRules.xml. If the policy is designed for a Windows 10 version below 1903 then you should also uncomment the appropriate version of msxml3.dll, msxml6.dll, and jscript9.dll at Line 65, and 798. After deploying WDAC with the additional block rules, MSBuild cannot be used as a bypass.
 
-![](msbuild_blocked.png)
+![](/assets/img/2020-08-28/msbuild_blocked.png)
 
 ## Benefits of WDAC
 

@@ -13,12 +13,12 @@ Starting with Windows 2012 R2 and Windows 8.1 (although the functionality was [b
 
 The RDP uses NTLM or Kerberos to perform authentication. A plaintext password is only required post-authentication to support the logon session and as such is not required when using Restricted Admin mode. We can use Mimikatz to Pass-The-Hash (actually OverPass-The-Hash) to ourselves, to create an impersonated logon session (with respect to network authentications requests). This logon session can be used to RDP to a remote server using Restricted Admin mode.
 
-![Using Mimikatz PTH to establish an RDP session with only an NTLM hash](pth_1.png)
+![Using Mimikatz PTH to establish an RDP session with only an NTLM hash](/assets/img/2019-09-02/pth_1.png)
 _Using Mimikatz PTH to establish an RDP session with only an NTLM hash_
 
 The biggest caveat is that Restricted Admin mode must be enabled on the remote server. This was not default on Windows 10, but will often be enabled on larger organisations to reduce the number of privileged logon session throughout the network. The user must have Administrator privileges on the remote server and not be a member of the Protected Users group, which prevents authentication using NTLM and DES or RC4 encryption types in Kerberos pre-authentication requests.
 
-![Error when Restricted Admin mode is disabled](image.png)
+![Error when Restricted Admin mode is disabled](/assets/img/2019-09-02/image.png)
 _Error when Restricted Admin mode is disabled_
 
 I tested the attack with Network Level Authentication (NLA) enabled and disable and it made no difference.

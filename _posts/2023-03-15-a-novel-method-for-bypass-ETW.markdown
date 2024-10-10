@@ -8,7 +8,7 @@ tags: []
 ---
 I wanted to bypass Event Tracing for Windows (ETW) without any memory patching or hardware breakpoints.  The purpose of breaking ETW is almost always to prevent EDR from gaining telemetry on the execution of C# assemblies. An example of some of the telemetry is shown below with the execution of Seatbelt in-memory inside the NanoBeacon process:
 
-![ProcessHacker shows loaded .Net assemblies](bad.png)
+![ProcessHacker shows loaded .Net assemblies](/assets/img/2023-03-15/bad.png)
 
 The current public methods of breaking ETW all patch functions in memory. They do something like this:
 ```c++
@@ -67,6 +67,6 @@ void breakETW_Forever() {
 ```
 
 And this is how ProcessHacker .Net assemblies tab looks running Seatbelt in-memory after executing the PoC:
-![ProcessHacker shows nothing](good.png)
+![ProcessHacker shows nothing](/assets/img/2023-03-15/good.png)
 
 There is no ETW telemetry so anyone consuming ETW events (_cough_ EDR _cough_) would be blind to the execution. 

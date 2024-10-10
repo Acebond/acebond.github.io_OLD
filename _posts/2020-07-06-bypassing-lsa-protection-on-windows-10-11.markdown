@@ -23,14 +23,14 @@ I decided to implement the 2nd method since removing the PPL flags allows the us
 
 The [EnumDeviceDrivers](https://docs.microsoft.com/en-us/windows/win32/api/psapi/nf-psapi-enumdevicedrivers?redirectedfrom=MSDN) function can be used to leak the kernel base address. This can be used to locate the PsInitialSystemProcess which points to the EPROCESS structure for the system process. Since the kernel stores processes in a linked list, the ActiveProcessLinks member of the EPROCESS structure can be used to iterate the linked list and find LSASS.
 
-![Figure 1 - Code to find the LSASS EPROCESS structure](code.png)
+![Figure 1 - Code to find the LSASS EPROCESS structure](/assets/img/2020-07-06/code.png)
 _Figure 1 - Code to find the LSASS EPROCESS structure_
 
 If we look at the EPROCESS structure (see Figure 2 below) we can see that the 5 fields we need to patch are all conventionally aligned into a continuous 4bytes. This lets us patch the EPROCESS structure in a single 4 byte write like so:
 
 > WriteMemoryPrimitive(Device, 4, CurrentProcessAddress + SignatureLevelOffset, 0x00);
 
-![Figure 2 - EPROCESS structure offsets on Windows 1909](EPROCESS3.png)
+![Figure 2 - EPROCESS structure offsets on Windows 1909](/assets/img/2020-07-06/EPROCESS3.png)
 _Figure 2 - EPROCESS structure offsets on Windows 1909_
 
 Now that the PPL has been removed, all the traditional methods of dumping LSASS will work, such as MimiKatz, the MiniDumpWriteDump API call, etc.

@@ -112,10 +112,10 @@ We use this to `VirtualAlloc` some memory in the privileged process, write some 
 
 In the screenshot below, LeakyService is running, and will spawn a cmd.exe as the lowpriv user. The cmd.exe (PID 9060 in this example) has a leaked thread handle to the LeakyService.exe which is running as SYSTEM.
 
-![System Informer showing the leaked handle](process.png)
+![System Informer showing the leaked handle](/assets/img/2024-10-10/process.png)
 
 To exploit this, I ran the GhostWrite PoC inside the cmd.exe (you’d otherwise have to `OpenProcess` and `DuplicateHandle`); this causes the leaked handle to leak again from cmd.exe into GhostWrite.exe, because cmd creates process with inherit handles set to TRUE.
 
-![PoC getting a Meterpreter shell](poc.png)
+![PoC getting a Meterpreter shell](/assets/img/2024-10-10/poc.png)
 
 GhostWrite then hijacks the SYSTEM thread using the leaked handle and the ROP method described above, creates its own thread inside the SYSTEM process to run a Meterpreter shellcode, and seamlessly restores the original thread execution. Easy-peasy lemon squeezy.
